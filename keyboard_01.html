@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>21. Hand gestures — Typing Lesson</title>
+
+<style>
+  :root{
+    --bg:#f6f7fb;
+    --ink:#1f2a44;
+    --muted:#8a93a4;
+    --accent:#2f6bdc;
+
+    --card:#ffffff;
+    --kbdBorder:#d9dee8;
+    --keyBorder:#dfe3ea;
+    --keyBg:#ffffff;
+    --keyInk:#2d3d63;
+
+    --shadow:0 10px 24px rgba(16,24,40,.08);
+    --shadow2:0 6px 16px rgba(16,24,40,.10);
+
+    --radius:18px;
+    --keyRadius:8px;
+
+    --pressBg:#e6efff;
+    --pressBorder:#9bb7ff;
+    --pressInk:#1f4fc7;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+
+  /* Top bar */
+  .topbar{
+    height:64px;
+    background:#fff;
+    border-bottom:1px solid #eef1f6;
+    display:flex;
+    align-items:center;
+    padding:0 18px;
+    gap:14px;
+  }
+  .burger{
+    width:34px;height:34px;border-radius:10px;
+    display:grid;place-items:center;
+    color:#6b7280;
+  }
+  .burger svg{width:20px;height:20px}
+  .title{
+    font-weight:600;
+    color:#2a3857;
+    letter-spacing:.2px;
+  }
+  .spacer{flex:1}
+  .user{
+    display:flex;align-items:center;gap:10px;color:#475569;font-weight:600;
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:999px;
+    background:linear-gradient(135deg,#d7e3ff,#f3f7ff);
+    border:1px solid #e6edf7;
+  }
+  .caret{opacity:.7}
+
+  /* Right floating buttons (like screenshot) */
+  .floating{
+    position:fixed;
+    right:18px;
+    top:108px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    background:#fff;
+    border:1px solid #eef1f6;
+    border-radius:999px;
+    padding:10px;
+    box-shadow: var(--shadow2);
+  }
+  .fab{
+    width:40px;height:40px;border-radius:999px;
+    display:grid;place-items:center;
+    color:#64748b;
+    background:#fff;
+    border:1px solid #eef1f6;
+  }
+  .fab svg{width:18px;height:18px}
+
+  /* Main layout */
+  .wrap{
+    max-width:900px;
+    margin:50px auto 40px;
+    padding:0 18px;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+  }
+
+  .start{
+    margin-top:10px;
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px 18px;
+    border-radius:12px;
+    background:var(--accent);
+    color:#fff;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    border:none;
+    cursor:pointer;
+    box-shadow:0 10px 22px rgba(47,107,220,.24);
+  }
+  .start:after{
+    content:"";
+    position:absolute;
+    align-items:center;
+    left:18px;
+    bottom:-7px;
+    width:0;height:0;
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-top:8px solid var(--accent);
+    filter: drop-shadow(0 3px 2px rgba(16,24,40,.08));
+  }
+  .hint{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  /* Exercise text */
+  .exercise{
+    width:min(820px, 100%);
+    margin-top:18px;
+    text-align:left;
+    color:#2a3a5f;
+  }
+
+  .line{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size:44px;
+    line-height:1.4;
+    letter-spacing:.8px;
+    margin:18px 0;
+    position:relative;
+  }
+  .divider{
+    width:100%;
+    border-bottom:2px dotted #cfd6e1;
+    opacity:.55;
+    margin:14px auto 8px;
+  }
+
+  /* Cursor underline: applied to .ch.active */
+  .ch{
+    position:relative;
+    display:inline-block;
+    padding:0 1px;
+  }
+  .ch.active::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    height:4px;
+    background:var(--accent);
+    border-radius:999px;
+    bottom:-10px;
+  }
+
+  /* Keyboard */
+  .kbdWrap{
+    margin-top:24px;
+    width:min(1000px, 100%);
+    background:#f2f4f8;
+    border:1px solid #eceff6;
+    border-radius:18px;
+    padding:14px 14px 16px;
+  }
+
+  .kbd{
+    background:#f3f5f9;
+    border:2px solid #d7dbe6;
+    border-radius:16px;
+    padding:10px;
+  }
+  .row{
+    display:flex;
+    gap:8px;
+    margin-bottom:8px;
+  }
+
+  .key{
+    position:relative;
+    flex:1;
+    height:48px;
+    background:var(--keyBg);
+    border:2px solid var(--keyBorder);
+    border-radius:var(--keyRadius);
+    box-shadow:0 2px 0 rgba(16,24,40,.04);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--keyInk);
+    font-weight:600;
+    user-select:none;
+    overflow:visible;
+  }
+  .key.small{height:42px}
+  .key.w1_5{flex:1.5}
+  .key.w2{flex:2}
+  .key.w2_5{flex:2.5}
+  .key.w3{flex:3}
+  .key.w5{flex:5}
+
+  .key .sub{
+    position:absolute;
+    top:6px;
+    left:8px;
+    font-size:12px;
+    opacity:.85;
+    font-weight:700;
+    color:#42557e;
+  }
+  .key .main{
+    font-size:18px;
+    letter-spacing:.4px;
+  }
+
+  /* “Press” animation + darker tint */
+  .key.press{
+    background:var(--pressBg);
+    border-color:var(--pressBorder);
+    color:var(--pressInk);
+    box-shadow:0 10px 18px rgba(47,107,220,.12);
+    animation: keyPress 360ms ease-in-out;
+    transform-origin:center;
+  }
+  @keyframes keyPress{
+    0%{transform:scale(1)}
+    35%{transform:scale(1.1)}
+    70%{transform:scale(.9)}
+    100%{transform:scale(1)}
+  }
+
+  /* Stars above the pressed key */
+  .stars{
+    position:absolute;
+    left:50%;
+    top:-18px;
+    transform:translateX(-50%);
+    display:flex;
+    gap:6px;
+    pointer-events:none;
+    opacity:0;
+  }
+  .key.press .stars{
+    opacity:1;
+    animation: starsIn 360ms ease-in-out;
+  }
+  @keyframes starsIn{
+    0%{transform:translateX(-50%) translateY(6px); opacity:0}
+    45%{transform:translateX(-50%) translateY(-2px); opacity:1}
+    100%{transform:translateX(-50%) translateY(0); opacity:0}
+  }
+  .star{
+    width:12px;height:12px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #ffd56a 45%, #ffb11a 70%, #ff9a00);
+    clip-path: polygon(50% 0%, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 78%, 20% 100%, 30% 60%, 0% 38%, 38% 36%);
+    filter: drop-shadow(0 2px 2px rgba(16,24,40,.12));
+  }
+  .star.s2{transform:translateY(2px) scale(.9)}
+  .star.s3{transform:translateY(1px) scale(.8)}
+
+  /* Subtle “home keys” styling (optional) */
+  .home{
+    border-color:#cfe0ff;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 880px){
+    .line{font-size:34px}
+    .kbdWrap{transform:scale(.98); transform-origin:top center}
+  }
+  @media (max-width: 560px){
+    .line{font-size:26px}
+    .row{gap:6px;margin-bottom:6px}
+    .key{height:44px}
+  }
+</style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="burger" aria-label="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </div>
+    <div class="title">21. Hand gestures</div>
+    <div class="spacer"></div>
+    <div class="user">
+      <div class="avatar" aria-hidden="true"></div>
+      <div>David M</div>
+      <div class="caret">▾</div>
+    </div>
+  </header>
+
+  <div class="floating" aria-hidden="true">
+    <div class="fab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M16 11c1.66 0 3-1.34 3-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3Z"/>
+        <path d="M8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Z"/>
+        <path d="M8 13c-2.76 0-5 1.79-5 4v2h10v-2c0-2.21-2.24-4-5-4Z"/>
+        <path d="M16 13c-1.07 0-2.06.26-2.86.71"/>
+        <path d="M19 19v-2c0-1.44-1.01-2.71-2.48-3.46"/>
+      </svg>
+    </div>
+    <div class="fab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M20 14V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8"/>
+        <path d="M8 11h8M8 15h6"/>
+        <path d="M19 18l2 2"/>
+        <path d="M17 20a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+      </svg>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <button id="startBtn" class="start">START TYPING</button>
+    <div class="hint" id="hint">Click “START TYPING” then type. (Auto-demo runs until you start.)</div>
+
+    <section class="exercise" aria-label="exercise">
+      <div class="line" id="line1"></div>
+      <div class="divider"></div>
+      <div class="line" id="line2"></div>
+      <div class="divider"></div>
+      <div class="line" id="line3"></div>
+      <div class="divider"></div>
+      <div class="line" id="line4"></div>
+    </section>
+
+    <section class="kbdWrap" aria-label="keyboard">
+      <div class="kbd" id="kbd">
+        <!-- Row 1 -->
+        <div class="row">
+          <div class="key small" data-key="`"><span class="sub">~</span><span class="main">`</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="1"><span class="sub">!</span><span class="main">1</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="2"><span class="sub">@</span><span class="main">2</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="3"><span class="sub">#</span><span class="main">3</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="4"><span class="sub">$</span><span class="main">4</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="5"><span class="sub">%</span><span class="main">5</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="6"><span class="sub">^</span><span class="main">6</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="7"><span class="sub">&</span><span class="main">7</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="8"><span class="sub">*</span><span class="main">8</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="9"><span class="sub">(</span><span class="main">9</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="0"><span class="sub">)</span><span class="main">0</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="-"><span class="sub">_</span><span class="main">-</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small" data-key="="><span class="sub">+</span><span class="main">=</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key small w2" data-key="Backspace"><span class="main">⌫</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row">
+          <div class="key w1_5" data-key="Tab"><span class="sub">tab</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="q"><span class="main">Q</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="w"><span class="main">W</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="e"><span class="main">E</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="r"><span class="main">R</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="t"><span class="main">T</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="y"><span class="main">Y</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="u"><span class="main">U</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="i"><span class="main">I</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="o"><span class="main">O</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="p"><span class="main">P</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="["><span class="main">[</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="]"><span class="main">]</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="\\"><span class="main">\</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="row">
+          <div class="key w2" data-key="CapsLock"><span class="sub">caps lock</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="a"><span class="main">A</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="s"><span class="main">S</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="d"><span class="main">D</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key home" data-key="f"><span class="main">F</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="g"><span class="main">G</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="h"><span class="main">H</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key home" data-key="j"><span class="main">J</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="k"><span class="main">K</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="l"><span class="main">L</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key=";"><span class="main">;</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="'"><span class="main">'</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key w2_5" data-key="Enter"><span class="sub">enter</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="row">
+          <div class="key w2_5" data-key="ShiftLeft"><span class="sub">shift</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="z"><span class="main">Z</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="x"><span class="main">X</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="c"><span class="main">C</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="v"><span class="main">V</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="b"><span class="main">B</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="n"><span class="main">N</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="m"><span class="main">M</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key=","><span class="main">,</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="."><span class="main">.</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key" data-key="/"><span class="main">/</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key w2_5" data-key="ShiftRight"><span class="sub">shift</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+        </div>
+
+        <!-- Row 5 -->
+        <div class="row" style="margin-bottom:0;">
+          <div class="key w3" data-key=" "><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key w5" data-key="Space"><span class="main"></span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+          <div class="key w3" data-key=" "><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+<script>
+  // ===== Exercise content (you can swap these strings anytime) =====
+  const lines = [
+    "ffff jj fjfj ffjj jjff fj f",
+    "ffff jfjf jj ff jj jf fj jj",
+    "fjff jfjj jjjf fjjj fj fj",
+    "fjfj jfjf jf jf jf fj fj jf"
+  ];
+
+  // Render exercise with per-character spans so we can underline the active char.
+  const lineEls = [line1, line2, line3, line4];
+  const charSpans = []; // flat list: {span, ch}
+  function renderExercise(){
+    charSpans.length = 0;
+    lineEls.forEach((el, i) => {
+      el.innerHTML = "";
+      const text = lines[i];
+      [...text].forEach(ch => {
+        const s = document.createElement("span");
+        s.className = "ch";
+        s.textContent = ch === " " ? "\u00A0" : ch;
+        el.appendChild(s);
+        charSpans.push({ span: s, ch });
+      });
+    });
+  }
+  renderExercise();
+
+  // Keyboard map
+  const keyEls = new Map();
+  document.querySelectorAll(".key").forEach(k => {
+    const dk = k.getAttribute("data-key");
+    if (!dk) return;
+    // normalize to lower for letters
+    keyEls.set(dk, k);
+    if (dk.length === 1 && /[A-Z]/.test(dk)) keyEls.set(dk.toLowerCase(), k);
+  });
+
+  // Find next "typeable" index (skip spaces)
+  let idx = 0;
+  function moveCursorTo(i){
+    charSpans.forEach(o => o.span.classList.remove("active"));
+    if (!charSpans[i]) return;
+    charSpans[i].span.classList.add("active");
+  }
+  function nextTypeable(from){
+    let i = from;
+    while (i < charSpans.length && charSpans[i].ch === " ") i++;
+    return i;
+  }
+  idx = nextTypeable(0);
+  moveCursorTo(idx);
+
+  function pressKey(key){
+    // Prefer letters + space. Normalize.
+    let k = key;
+    if (k === " ") k = "Space";
+    if (typeof k === "string" && k.length === 1) k = k.toLowerCase();
+
+    const el = keyEls.get(k) || keyEls.get(key);
+    if (!el) return;
+
+    el.classList.remove("press"); // restart animation
+    // Force reflow to restart animation reliably
+    void el.offsetWidth;
+    el.classList.add("press");
+
+    // Clean up class after animation ends
+    window.setTimeout(() => el.classList.remove("press"), 420);
+  }
+
+  // ===== Demo typing (autoplay) =====
+  let demoTimer = null;
+  let started = false;
+  function demoStep(){
+    if (started) return;
+    const i = nextTypeable(idx);
+    if (i >= charSpans.length) {
+      idx = nextTypeable(0);
+      moveCursorTo(idx);
+      return;
+    }
+    const ch = charSpans[i].ch;
+    pressKey(ch === " " ? "Space" : ch);
+    moveCursorTo(i);
+    idx = i + 1;
+  }
+  demoTimer = setInterval(demoStep, 520);
+
+  // ===== Start typing (real input) =====
+  const startBtn = document.getElementById("startBtn");
+  const hint = document.getElementById("hint");
+
+  function startTyping(){
+    started = true;
+    hint.textContent = "Typing enabled. Your keystrokes will animate the on-screen key.";
+    clearInterval(demoTimer);
+    startBtn.textContent = "TYPING…";
+    startBtn.style.opacity = ".9";
+  }
+
+  startBtn.addEventListener("click", () => {
+    if (!started) startTyping();
+  });
+
+  // Real typing handler
+  window.addEventListener("keydown", (e) => {
+    if (!started) return;
+
+    // show press animation
+    if (e.key === "Backspace") pressKey("Backspace");
+    else if (e.key === "Enter") pressKey("Enter");
+    else if (e.key === "Tab") { e.preventDefault(); pressKey("Tab"); }
+    else if (e.key === " ") { e.preventDefault(); pressKey("Space"); }
+    else if (e.key.length === 1) pressKey(e.key);
+
+    // advance cursor only if correct key matches current exercise character (ignoring spaces)
+    const i = nextTypeable(idx);
+    if (i >= charSpans.length) return;
+
+    const expected = charSpans[i].ch;
+    const got = e.key === " " ? " " : e.key.toLowerCase();
+
+    if (expected !== " " && expected.toLowerCase() === got){
+      idx = i + 1;
+      idx = nextTypeable(idx);
+      moveCursorTo(idx);
+    }
+  });
+
+</script>
+</body>
+</html>
