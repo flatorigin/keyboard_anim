@@ -37,7 +37,6 @@
     color:var(--ink);
   }
 
-  /* Top bar */
   .topbar{
     height:64px;
     background:#fff;
@@ -69,7 +68,6 @@
   }
   .caret{opacity:.7}
 
-  /* Right floating buttons (like screenshot) */
   .floating{
     position:fixed;
     right:18px;
@@ -92,7 +90,6 @@
   }
   .fab svg{width:18px;height:18px}
 
-  /* Main layout */
   .wrap{
     max-width:900px;
     margin:50px auto 40px;
@@ -104,7 +101,8 @@
 
   .start{
     margin-top:10px;
-    position:relative;
+    position:absolute;
+    z-index:5;
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -119,7 +117,9 @@
     border:none;
     cursor:pointer;
     box-shadow:0 10px 22px rgba(47,107,220,.24);
+    transform:translate(-50%, -50%);
   }
+  .start.hidden{display:none;}
   .start:after{
     content:"";
     position:absolute;
@@ -138,12 +138,12 @@
     font-size:13px;
   }
 
-  /* Exercise text */
   .exercise{
     width:min(820px, 100%);
     margin-top:18px;
     text-align:left;
     color:#2a3a5f;
+    position:relative;
   }
 
   .line{
@@ -161,7 +161,6 @@
     margin:14px auto 8px;
   }
 
-  /* Cursor underline: applied to .ch.active */
   .ch{
     position:relative;
     display:inline-block;
@@ -182,37 +181,29 @@
     background:#eaf3ff;
     border-radius:6px;
   }
-  .ch.correct{
-    color:#0f9153;
-  }
-  .ch.wrong{
-    color:#d62839;
-  }
-  .ch.bump{
-    animation:typedPop 200ms ease;
-  }
-  .ch.shake{
-    animation:typedShake 240ms ease;
-  }
+  .ch.correct{ color:#3CA947; }
+  .ch.wrong{ color:#E86969; }
+  .ch.fixed{ color:#d6a000; }
+
+  .ch.bump{ animation:typedPop 200ms ease; }
+  .ch.shake{ animation:typedShake 240ms ease; }
+
   @keyframes typedPop{
     0%{transform:translateY(0) scale(1)}
-    35%{transform:translateY(-6px) scale(1.06)}
-    100%{transform:translateY(0) scale(1)}
+    35%{transform:translateY(1px) scale(0.95)}
+    100%{transform:translateY(0px) scale(1)}
   }
   @keyframes typedShake{
     0%{transform:translateX(0)}
-    25%{transform:translateX(-2px)}
-    50%{transform:translateX(2px)}
+    25%{transform:translateX(-5px)}
+    50%{transform:translateX(3px)}
     75%{transform:translateX(-2px)}
     100%{transform:translateX(0)}
   }
 
-  /* Keyboard */
   .kbdWrap{
     margin-top:24px;
     width:min(1000px, 100%);
-    background:#f2f4f8;
-    border:1px solid #eceff6;
     border-radius:18px;
     padding:14px 14px 16px;
   }
@@ -266,7 +257,6 @@
     letter-spacing:.4px;
   }
 
-  /* “Press” animation + darker tint */
   .key.press{
     background:var(--pressBg);
     border-color:var(--pressBorder);
@@ -282,7 +272,6 @@
     100%{transform:scale(1)}
   }
 
-  /* Stars above the pressed key */
   .stars{
     position:absolute;
     left:50%;
@@ -311,12 +300,8 @@
   .star.s2{transform:translateY(2px) scale(.9)}
   .star.s3{transform:translateY(1px) scale(.8)}
 
-  /* Subtle “home keys” styling (optional) */
-  .home{
-    border-color:#cfe0ff;
-  }
+  .home{ border-color:#cfe0ff; }
 
-  /* Responsive tweaks */
   @media (max-width: 880px){
     .line{font-size:34px}
     .kbdWrap{transform:scale(.98); transform-origin:top center}
@@ -366,10 +351,10 @@
   </div>
 
   <main class="wrap">
-    <button id="startBtn" class="start">START TYPING</button>
-    <div class="hint" id="hint">Click “START TYPING” then type. (Auto-demo runs until you start.)</div>
+    <div class="hint" id="hint">Type to begin or click start when it appears.</div>
 
-    <section class="exercise" aria-label="exercise">
+    <section class="exercise" aria-label="exercise" id="exercise">
+      <button id="startBtn" class="start hidden">START TYPING</button>
       <div class="line" id="line1"></div>
       <div class="divider"></div>
       <div class="line" id="line2"></div>
@@ -380,89 +365,11 @@
     </section>
 
     <section class="kbdWrap" aria-label="keyboard">
-      <div class="kbd" id="kbd">
-        <!-- Row 1 -->
-        <div class="row">
-          <div class="key small" data-key="`"><span class="sub">~</span><span class="main">`</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="1"><span class="sub">!</span><span class="main">1</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="2"><span class="sub">@</span><span class="main">2</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="3"><span class="sub">#</span><span class="main">3</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="4"><span class="sub">$</span><span class="main">4</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="5"><span class="sub">%</span><span class="main">5</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="6"><span class="sub">^</span><span class="main">6</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="7"><span class="sub">&</span><span class="main">7</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="8"><span class="sub">*</span><span class="main">8</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="9"><span class="sub">(</span><span class="main">9</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="0"><span class="sub">)</span><span class="main">0</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="-"><span class="sub">_</span><span class="main">-</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small" data-key="="><span class="sub">+</span><span class="main">=</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key small w2" data-key="Backspace"><span class="main">⌫</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-        </div>
-
-        <!-- Row 2 -->
-        <div class="row">
-          <div class="key w1_5" data-key="Tab"><span class="sub">tab</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="q"><span class="main">Q</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="w"><span class="main">W</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="e"><span class="main">E</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="r"><span class="main">R</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="t"><span class="main">T</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="y"><span class="main">Y</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="u"><span class="main">U</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="i"><span class="main">I</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="o"><span class="main">O</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="p"><span class="main">P</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="["><span class="main">[</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="]"><span class="main">]</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="\\"><span class="main">\</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-        </div>
-
-        <!-- Row 3 -->
-        <div class="row">
-          <div class="key w2" data-key="CapsLock"><span class="sub">caps lock</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="a"><span class="main">A</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="s"><span class="main">S</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="d"><span class="main">D</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key home" data-key="f"><span class="main">F</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="g"><span class="main">G</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="h"><span class="main">H</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key home" data-key="j"><span class="main">J</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="k"><span class="main">K</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="l"><span class="main">L</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key=";"><span class="main">;</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="'"><span class="main">'</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key w2_5" data-key="Enter"><span class="sub">enter</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-        </div>
-
-        <!-- Row 4 -->
-        <div class="row">
-          <div class="key w2_5" data-key="ShiftLeft"><span class="sub">shift</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="z"><span class="main">Z</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="x"><span class="main">X</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="c"><span class="main">C</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="v"><span class="main">V</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="b"><span class="main">B</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="n"><span class="main">N</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="m"><span class="main">M</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key=","><span class="main">,</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="."><span class="main">.</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key" data-key="/"><span class="main">/</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key w2_5" data-key="ShiftRight"><span class="sub">shift</span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-        </div>
-
-        <!-- Row 5 -->
-        <div class="row" style="margin-bottom:0;">
-          <div class="key w3" data-key=" "><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key w5" data-key="Space"><span class="main"></span><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-          <div class="key w3" data-key=" "><div class="stars"><div class="star"></div><div class="star s2"></div><div class="star s3"></div></div></div>
-        </div>
-
-      </div>
+      <div id="keyboardMount"></div>
     </section>
   </main>
 
 <script>
-  // ===== Exercise content (you can swap these strings anytime) =====
   const lines = [
     "ffff jj fjfj ffjj jjff fj f",
     "ffff jfjf jj ff jj jf fj jj",
@@ -470,58 +377,211 @@
     "fjfj jfjf jf jf jf fj fj jf"
   ];
 
-  // Render exercise with per-character spans so we can underline the active char.
+  const keyboardMount = document.getElementById("keyboardMount");
+  const keyboardLayout = [
+    [
+      { key: "`", main: "`", sub: "~", size: "small" },
+      { key: "1", main: "1", sub: "!", size: "small" },
+      { key: "2", main: "2", sub: "@", size: "small" },
+      { key: "3", main: "3", sub: "#", size: "small" },
+      { key: "4", main: "4", sub: "$", size: "small" },
+      { key: "5", main: "5", sub: "%", size: "small" },
+      { key: "6", main: "6", sub: "^", size: "small" },
+      { key: "7", main: "7", sub: "&", size: "small" },
+      { key: "8", main: "8", sub: "*", size: "small" },
+      { key: "9", main: "9", sub: "(", size: "small" },
+      { key: "0", main: "0", sub: ")", size: "small" },
+      { key: "-", main: "-", sub: "_", size: "small" },
+      { key: "=", main: "=", sub: "+", size: "small" },
+      { key: "Backspace", main: "⌫", size: "small w2" }
+    ],
+    [
+      { key: "Tab", sub: "tab", size: "w1_5" },
+      { key: "q", main: "Q" },
+      { key: "w", main: "W" },
+      { key: "e", main: "E" },
+      { key: "r", main: "R" },
+      { key: "t", main: "T" },
+      { key: "y", main: "Y" },
+      { key: "u", main: "U" },
+      { key: "i", main: "I" },
+      { key: "o", main: "O" },
+      { key: "p", main: "P" },
+      { key: "[", main: "[" },
+      { key: "]", main: "]" },
+      { key: "\\", main: "\\" }
+    ],
+    [
+      { key: "CapsLock", sub: "caps lock", size: "w2" },
+      { key: "a", main: "A" },
+      { key: "s", main: "S" },
+      { key: "d", main: "D" },
+      { key: "f", main: "F", extraClass: "home" },
+      { key: "g", main: "G" },
+      { key: "h", main: "H" },
+      { key: "j", main: "J", extraClass: "home" },
+      { key: "k", main: "K" },
+      { key: "l", main: "L" },
+      { key: ";", main: ";" },
+      { key: "'", main: "'" },
+      { key: "Enter", sub: "enter", size: "w2_5" }
+    ],
+    [
+      { key: "ShiftLeft", sub: "shift", size: "w2_5" },
+      { key: "z", main: "Z" },
+      { key: "x", main: "X" },
+      { key: "c", main: "C" },
+      { key: "v", main: "V" },
+      { key: "b", main: "B" },
+      { key: "n", main: "N" },
+      { key: "m", main: "M" },
+      { key: ",", main: "," },
+      { key: ".", main: "." },
+      { key: "/", main: "/" },
+      { key: "ShiftRight", sub: "shift", size: "w2_5" }
+    ],
+    [
+      { key: " ", size: "w3" },
+      { key: "Space", size: "w5" },
+      { key: "  ", size: "w3" }
+    ]
+  ];
+
+  function createKeyElement(def){
+    const key = document.createElement("div");
+    key.className = ["key", def.size || "", def.extraClass || ""].filter(Boolean).join(" ");
+    key.dataset.key = def.key;
+
+    const stars = document.createElement("div");
+    stars.className = "stars";
+    stars.innerHTML = '<div class="star"></div><div class="star s2"></div><div class="star s3"></div>';
+
+    if (def.sub) {
+      const sub = document.createElement("span");
+      sub.className = "sub";
+      sub.textContent = def.sub;
+      key.appendChild(sub);
+    }
+    if (def.main) {
+      const main = document.createElement("span");
+      main.className = "main";
+      main.textContent = def.main;
+      key.appendChild(main);
+    }
+    key.appendChild(stars);
+    return key;
+  }
+
+  function renderKeyboard(mount){
+    if (!mount) return new Map();
+    mount.innerHTML = "";
+    const kbd = document.createElement("div");
+    kbd.className = "kbd";
+
+    const map = new Map();
+    keyboardLayout.forEach((rowDef, i) => {
+      const row = document.createElement("div");
+      row.className = "row";
+      if (i === keyboardLayout.length - 1) row.style.marginBottom = "0";
+
+      rowDef.forEach(def => {
+        const key = createKeyElement(def);
+        row.appendChild(key);
+
+        map.set(def.key, key);
+        // letters are already lowercase in your layout; keep this simple + reliable
+        if (typeof def.key === "string" && def.key.length === 1) {
+          map.set(def.key.toLowerCase(), key);
+        }
+      });
+      kbd.appendChild(row);
+    });
+
+    mount.appendChild(kbd);
+    return map;
+  }
+
+  // ===== Exercise render =====
+  const line1 = document.getElementById("line1");
+  const line2 = document.getElementById("line2");
+  const line3 = document.getElementById("line3");
+  const line4 = document.getElementById("line4");
+
   const lineEls = [line1, line2, line3, line4];
-  const charSpans = []; // flat list: {span, ch}
+
+  const exerciseEl = document.getElementById("exercise");
+  const startBtn = document.getElementById("startBtn");
+  const hint = document.getElementById("hint");
+
+  const charSpans = [];      // { span, ch }
+  const charStates = [];     // "pending" | "correct" | "wrong" | "fixed"
+  const charHadError = [];   // boolean
+
   function renderExercise(){
     charSpans.length = 0;
+    charStates.length = 0;
+    charHadError.length = 0;
+
     lineEls.forEach((el, i) => {
       el.innerHTML = "";
-      const text = lines[i];
+      const text = lines[i] || "";
       [...text].forEach(ch => {
         const s = document.createElement("span");
         s.className = "ch";
         s.textContent = ch === " " ? "\u00A0" : ch;
         el.appendChild(s);
         charSpans.push({ span: s, ch });
+        charStates.push("pending");
+        charHadError.push(false);
       });
     });
   }
   renderExercise();
 
-  // Keyboard map
-  const keyEls = new Map();
-  document.querySelectorAll(".key").forEach(k => {
-    const dk = k.getAttribute("data-key");
-    if (!dk) return;
-    // normalize to lower for letters
-    keyEls.set(dk, k);
-    if (dk.length === 1 && /[A-Z]/.test(dk)) keyEls.set(dk.toLowerCase(), k);
-  });
+  const keyEls = renderKeyboard(keyboardMount);
 
-  // Find next "typeable" index (skip spaces)
+  // ===== Cursor helpers =====
   let idx = 0;
+
+  function setState(i, state){
+    const span = charSpans[i].span;
+    span.classList.remove("correct", "wrong", "fixed");
+    if (state === "correct") span.classList.add("correct");
+    if (state === "wrong") span.classList.add("wrong");
+    if (state === "fixed") span.classList.add("fixed");
+    charStates[i] = state;
+  }
+
   function moveCursorTo(i){
     charSpans.forEach(o => o.span.classList.remove("active"));
     if (!charSpans[i]) return;
     charSpans[i].span.classList.add("active");
+    if (!startBtn.classList.contains("hidden")) positionStartButton();
   }
+
   function animateSpan(span, cls){
     span.classList.remove("bump", "shake");
     span.classList.remove(cls);
     void span.offsetWidth;
     span.classList.add(cls);
   }
+
   function nextTypeable(from){
     let i = from;
     while (i < charSpans.length && charSpans[i].ch === " ") i++;
     return i;
   }
+
+  function prevTypeable(from){
+    let i = from - 1;
+    while (i >= 0 && charSpans[i].ch === " ") i--;
+    return i;
+  }
+
   idx = nextTypeable(0);
   moveCursorTo(idx);
 
   function pressKey(key){
-    // Prefer letters + space. Normalize.
     let k = key;
     if (k === " ") k = "Space";
     if (typeof k === "string" && k.length === 1) k = k.toLowerCase();
@@ -529,83 +589,112 @@
     const el = keyEls.get(k) || keyEls.get(key);
     if (!el) return;
 
-    el.classList.remove("press"); // restart animation
-    // Force reflow to restart animation reliably
+    el.classList.remove("press");
     void el.offsetWidth;
     el.classList.add("press");
 
-    // Clean up class after animation ends
     window.setTimeout(() => el.classList.remove("press"), 420);
   }
 
-  // ===== Demo typing (autoplay) =====
-  let demoTimer = null;
+  // ===== Start typing =====
   let started = false;
-  function demoStep(){
-    if (started) return;
-    const i = nextTypeable(idx);
-    if (i >= charSpans.length) {
-      idx = nextTypeable(0);
-      moveCursorTo(idx);
-      return;
-    }
-    const ch = charSpans[i].ch;
-    pressKey(ch === " " ? "Space" : ch);
-    moveCursorTo(i);
-    idx = i + 1;
-  }
-  demoTimer = setInterval(demoStep, 520);
+  let idleTimer = null;
 
-  // ===== Start typing (real input) =====
-  const startBtn = document.getElementById("startBtn");
-  const hint = document.getElementById("hint");
+  function positionStartButton(){
+    const active = charSpans[idx];
+    if (!active) return;
+    const rect = active.span.getBoundingClientRect();
+    const containerRect = exerciseEl.getBoundingClientRect();
+    startBtn.style.left = `${rect.left - containerRect.left + rect.width / 2}px`;
+    startBtn.style.top = `${rect.top - containerRect.top + rect.height / 2}px`;
+  }
+
+  function hideStartButton(){ startBtn.classList.add("hidden"); }
+  function showStartButton(){
+    if (started) return;
+    positionStartButton();
+    startBtn.classList.remove("hidden");
+  }
+
+  window.addEventListener("resize", () => {
+    if (!startBtn.classList.contains("hidden")) positionStartButton();
+  });
+
+  function resetIdleTimer(){
+    if (started) return;
+    hideStartButton();
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(showStartButton, 5000);
+  }
 
   function startTyping(){
     started = true;
     hint.textContent = "Typing enabled. Your keystrokes will animate the on-screen key.";
-    clearInterval(demoTimer);
-    startBtn.textContent = "TYPING…";
-    startBtn.style.opacity = ".9";
+    hideStartButton();
   }
 
   startBtn.addEventListener("click", () => {
     if (!started) startTyping();
   });
 
-  // Real typing handler
-  window.addEventListener("keydown", (e) => {
-    if (!started) return;
+  resetIdleTimer();
 
-    // show press animation
-    if (e.key === "Backspace") pressKey("Backspace");
-    else if (e.key === "Enter") pressKey("Enter");
+  // ✅ FIX: advance cursor after each attempt
+  function advanceAfter(i){
+    idx = nextTypeable(i + 1);
+    if (idx < charSpans.length) moveCursorTo(idx);
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (!started) startTyping();
+
+    hideStartButton();
+    resetIdleTimer();
+
+    // Backspace
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      pressKey("Backspace");
+      const prev = prevTypeable(idx);
+      if (prev >= 0) {
+        // clear prior state
+        setState(prev, "pending");
+        charHadError[prev] = false;
+        idx = prev;
+        moveCursorTo(idx);
+      }
+      return;
+    }
+
+    // key animation
+    if (e.key === "Enter") pressKey("Enter");
     else if (e.key === "Tab") { e.preventDefault(); pressKey("Tab"); }
     else if (e.key === " ") { e.preventDefault(); pressKey("Space"); }
     else if (e.key.length === 1) pressKey(e.key);
 
-    // advance cursor only if correct key matches current exercise character (ignoring spaces)
     const i = nextTypeable(idx);
     if (i >= charSpans.length) return;
 
-    const expected = charSpans[i].ch;
-    const got = e.key === " " ? " " : e.key.toLowerCase();
+    // only accept single chars + space
+    if (e.key.length !== 1 && e.key !== " ") return;
 
+    const expected = charSpans[i].ch.toLowerCase();
+    const got = e.key === " " ? " " : e.key.toLowerCase();
     const span = charSpans[i].span;
 
-    if (expected !== " " && expected.toLowerCase() === got){
-      span.classList.remove("wrong");
-      span.classList.add("correct");
+    if (expected === got){
+      const nextState = charHadError[i] ? "fixed" : "correct";
+      setState(i, nextState);
       animateSpan(span, "bump");
-      idx = i + 1;
-      idx = nextTypeable(idx);
-      moveCursorTo(idx);
-    } else if (expected !== " ") {
-      span.classList.remove("correct");
-      span.classList.add("wrong");
+    } else {
+      charHadError[i] = true;
+      setState(i, "wrong");
       animateSpan(span, "shake");
     }
-  });
 
+    // ✅ move to next character (skip spaces)
+    advanceAfter(i);
+  });
 </script>
 </body>
 </html>
