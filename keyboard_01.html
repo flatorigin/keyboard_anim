@@ -166,6 +166,7 @@
     position:relative;
     display:inline-block;
     padding:0 1px;
+    transition: transform 200ms ease, color 180ms ease,background-color 180ms ease;
   }
   .ch.active::after{
     content:"";
@@ -176,6 +177,34 @@
     background:var(--accent);
     border-radius:999px;
     bottom:-10px;
+  }
+  .ch.active{
+    background:#eaf3ff;
+    border-radius:6px;
+  }
+  .ch.correct{
+    color:#0f9153;
+  }
+  .ch.wrong{
+    color:#d62839;
+  }
+  .ch.bump{
+    animation:typedPop 200ms ease;
+  }
+  .ch.shake{
+    animation:typedShake 240ms ease;
+  }
+  @keyframes typedPop{
+    0%{transform:translateY(0) scale(1)}
+    35%{transform:translateY(-6px) scale(1.06)}
+    100%{transform:translateY(0) scale(1)}
+  }
+  @keyframes typedShake{
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-2px)}
+    50%{transform:translateX(2px)}
+    75%{transform:translateX(-2px)}
+    100%{transform:translateX(0)}
   }
 
   /* Keyboard */
@@ -477,6 +506,12 @@
     if (!charSpans[i]) return;
     charSpans[i].span.classList.add("active");
   }
+  function animateSpan(span, cls){
+    span.classList.remove("bump", "shake");
+    span.classList.remove(cls);
+    void span.offsetWidth;
+    span.classList.add(cls);
+  }
   function nextTypeable(from){
     let i = from;
     while (i < charSpans.length && charSpans[i].ch === " ") i++;
@@ -555,10 +590,19 @@
     const expected = charSpans[i].ch;
     const got = e.key === " " ? " " : e.key.toLowerCase();
 
+    const span = charSpans[i].span;
+
     if (expected !== " " && expected.toLowerCase() === got){
+      span.classList.remove("wrong");
+      span.classList.add("correct");
+      animateSpan(span, "bump");
       idx = i + 1;
       idx = nextTypeable(idx);
       moveCursorTo(idx);
+    } else if (expected !== " ") {
+      span.classList.remove("correct");
+      span.classList.add("wrong");
+      animateSpan(span, "shake");
     }
   });
 
